@@ -1,0 +1,7 @@
+#!/bin/sh
+
+e=0
+
+set -x
+go test -race ./... || e=1
+exit $e
