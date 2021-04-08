@@ -308,7 +308,7 @@ func (h Handler) Profile(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("could not enable CPU profiling: %w", err)
 	}
 
-	sleep(r, sec)
+	sleep(r.Context(), sec)
 	pprof.StopCPUProfile()
 	return nil
 }
@@ -382,7 +382,7 @@ func (h Handler) Trace(w http.ResponseWriter, r *http.Request) error {
 		return fmt.Errorf("could not enable tracing: %w", err)
 	}
 
-	sleep(r, sec)
+	sleep(r.Context(), sec)
 	trace.Stop()
 	return nil
 }
@@ -501,6 +501,9 @@ func (h Handler) serveProfile(w http.ResponseWriter, r *http.Request, p *pprof.P
 }
 
 func getSeconds(r *http.Request, must bool) (time.Duration, error) {
+	if !must && r.FormValue("seconds") == "" {
+		return 0, nil
+	}
 	s, err := strconv.ParseInt(r.FormValue("seconds"), 10, 32)
 	if err != nil {
 		return 0, withCode(400, fmt.Errorf("seconds: %w", err))
@@ -535,6 +538,11 @@ func collectProfile(p *pprof.Profile) (*profile.Profile, error) {
 
 	p0.TimeNanos = ts
 	return p0, nil
+}
+
+func hasDot() bool {
+	_, err := exec.LookPath("dot")
+	return err == nil
 }
 
 func hasGo() bool {
@@ -656,10 +664,11 @@ func medianBucket(h *metrics.Float64Histogram) float64 {
 	panic("should not happen")
 }
 
-func sleep(r *http.Request, d time.Duration) {
+func sleep(ctx context.Context, d time.Duration) {
+	t := time.NewTicker(d)
 	select {
-	case <-time.After(d):
-	case <-r.Context().Done():
+	case <-t.C:
+	case <-ctx.Done():
 	}
 }
 

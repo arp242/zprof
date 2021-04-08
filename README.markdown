@@ -1,13 +1,15 @@
 zprof displays runtime profiling data over HTTP.
 
-This is based on net/http/pprof; but has been rewritten quite a bit and is much
-nicer. You can display the callgraphs directly without downloading the file
-first, and a bunch of other changes. It doesn't give you the full power of the
-CLI, but overall it's fairly useful.
+This is based on [net/http/pprof][httppprof]; but has been rewritten quite a bit
+and is much nicer. You can display the callgraphs directly without downloading
+the file first, and a bunch of other changes. It doesn't give you the full power
+of the CLI, but overall it's fairly useful.
 
 Import as `zgo.at/zprof`; you need Go 1.16.
 
 Current status: fairly functional, still some things left to do. API may break.
+
+[httppprof]: https://pkg.go.dev/net/http/pprof
 
 Usage
 -----
