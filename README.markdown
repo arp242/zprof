@@ -9,7 +9,7 @@ Import as `zgo.at/zprof`; you need Go 1.16.
 
 Current status: fairly functional, still some things left to do. API may break.
 
-[httppprof]: https://pkg.go.dev/net/http/pprof
+[httppprof]: https://godocs.io/net/http/pprof
 
 Usage
 -----
