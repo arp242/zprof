@@ -253,6 +253,7 @@ func (h Handler) Index(w http.ResponseWriter, r *http.Request) error {
 		"mutexRate": runtime.SetMutexProfileFraction(-1),
 		"blockRate": atomic.LoadInt64(BlockRate),
 		"hasGo":     hasGo(),
+		"hasDot":    hasDot(),
 		"report":    report,
 		"seconds":   r.Form.Get("seconds"),
 	})
@@ -601,7 +602,11 @@ func readProfile(report string, p *pprof.Profile, delta *profile.Profile) ([]byt
 		return nil, err
 	}
 
-	return exec.Command("go", "tool", "pprof", "-"+report, bin, tmp.Name()).CombinedOutput()
+	out, err := exec.Command("go", "tool", "pprof", "-"+report, bin, tmp.Name()).CombinedOutput()
+	if err != nil {
+		return nil, fmt.Errorf("%s\n%s", out, err)
+	}
+	return out, nil
 }
 
 type metric struct {

@@ -40,7 +40,8 @@
 
 <h2>pprof</h2>
 <div id="pprof">
-	{{if not .hasGo}}<p class="box"><strong>Notice:</strong> no <code>go</code> binary in PATH; reporting options are more limited.</p>{{end}}
+	{{if not .hasGo}}<p class="box"><strong>Notice:</strong> no <code>go</code> binary in PATH; reporting options are limited.</p>{{end}}
+	{{if not .hasDot}}<p class="box">SVG graphics disabled as there's no <code>dot</code> binary in PATH; Graphviz doesn't seem installed(?)</p>{{end}}
 
 	<form method="get" action="{{$.prefix}}">
 		<div id="pprof-opt">
@@ -57,7 +58,9 @@
 				{{if $.hasGo}}
 				<label><input type="radio" name="report" value="traces" {{if eq .report "traces"}}checked{{end}}> Traces</label>
 				<label><input type="radio" name="report" value="top" {{if eq .report "top"}}checked{{end}}> Top</label>
+				{{if $.hasDot}}
 				<label><input type="radio" name="report" value="svg" {{if eq .report "svg"}}checked{{end}}> SVG</label>
+				{{end}}
 				{{end}}
 			</div>
 		</div>
