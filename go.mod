@@ -1,3 +1,3 @@
 module zgo.at/zprof
 
-go 1.16
+go 1.25

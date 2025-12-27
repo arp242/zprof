@@ -15,7 +15,6 @@ import (
 	"fmt"
 	"html/template"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"os"
 	"os/exec"
@@ -208,7 +207,7 @@ func (h Handler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		}
 
 		w.WriteHeader(code)
-		fmt.Fprintf(w, err.Error()+"\n")
+		fmt.Fprintln(w, err.Error())
 	}
 }
 
@@ -245,7 +244,7 @@ func (h Handler) Index(w http.ResponseWriter, r *http.Request) error {
 	if report == "" {
 		report = ReportSVG
 	}
-	return indexTpl.Execute(w, map[string]interface{}{
+	return indexTpl.Execute(w, map[string]any{
 		"prefix":    h.prefix,
 		"addr":      proto + path.Join(r.Host, r.URL.String()),
 		"profiles":  profiles,
@@ -477,7 +476,7 @@ func (h Handler) serveProfile(w http.ResponseWriter, r *http.Request, p *pprof.P
 		return p.WriteTo(w, 0)
 	case ReportDebug:
 		if delta != nil {
-			return errors.New("Debug is not supported with delta profiles")
+			return errors.New("debug is not supported with delta profiles")
 		}
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		d := 1
@@ -580,7 +579,7 @@ func readProfile(report string, p *pprof.Profile, delta *profile.Profile) ([]byt
 		}
 	}
 
-	tmp, err := ioutil.TempFile("", "zprof-*")
+	tmp, err := os.CreateTemp("", "zprof-*")
 	if err != nil {
 		return nil, err
 	}
@@ -612,7 +611,7 @@ func readProfile(report string, p *pprof.Profile, delta *profile.Profile) ([]byt
 type metric struct {
 	Name, Desc, Unit string
 	Cum              bool
-	Value            interface{}
+	Value            any
 }
 
 func getMetrics() []metric {
