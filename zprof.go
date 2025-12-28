@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"html/template"
 	"io"
+	"math"
 	"net/http"
 	"os"
 	"os/exec"
@@ -615,22 +616,31 @@ type metric struct {
 }
 
 func getMetrics() []metric {
-	descs := metrics.All()
-	samples := make([]metrics.Sample, len(descs))
-	for i := range samples {
-		samples[i].Name = descs[i].Name
+	var (
+		descs   = make([]metrics.Description, 0, 32)
+		samples = make([]metrics.Sample, 0, 32)
+	)
+	for _, m := range metrics.All() {
+		if m.Name == "/gc/pauses:seconds" { // Deprecated
+			continue
+		}
+		descs, samples = append(descs, m), append(samples, metrics.Sample{Name: m.Name})
 	}
 	metrics.Read(samples)
 
 	r := make([]metric, 0, len(samples))
 	for i, s := range samples {
-		sp := strings.SplitN(s.Name, ":", 2)
-		n, unit := sp[0], sp[1]
+		n, unit, _ := strings.Cut(s.Name, ":")
 		m := metric{Name: n, Unit: unit, Desc: descs[i].Description, Cum: descs[i].Cumulative}
 
 		switch s.Value.Kind() {
 		case metrics.KindUint64:
 			v := s.Value.Uint64()
+			// So many of them, and usually 0. Not useful to include.
+			if strings.HasPrefix(n, "/godebug/non-default-behavior/") && v == 0 {
+				continue
+			}
+
 			m.Value = v
 			if unit == "bytes" {
 				m.Value = fmtByte(v)
@@ -644,7 +654,7 @@ func getMetrics() []metric {
 				m.Value = time.Duration(v * 100000)
 			}
 
-		default: // This may happen as new metrics get added.
+		default: // May happen as new metrics get added.
 			m.Value = fmt.Sprintf("unexpected metric Kind: %T", s.Value.Kind())
 		}
 		r = append(r, m)
@@ -662,6 +672,9 @@ func medianBucket(h *metrics.Float64Histogram) float64 {
 	for i, count := range h.Counts {
 		total += count
 		if total >= thresh {
+			if math.IsInf(h.Buckets[i], 0) {
+				return 0
+			}
 			return h.Buckets[i]
 		}
 	}
@@ -676,7 +689,7 @@ func sleep(ctx context.Context, d time.Duration) {
 	}
 }
 
-var units = []string{"B", "KiB", "MiB", "GiB", "TiB", "PiB"}
+var units = []string{"B", "K", "M", "G", "T", "P"}
 
 func fmtByte(b uint64) string {
 	f := float64(b)

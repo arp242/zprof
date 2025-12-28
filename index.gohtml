@@ -4,34 +4,34 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<title>zprof</title>
 	<style>
-		body                   { font: 16px/1.5em sans-serif; color: #252525; padding: 1em; background-color: #eee; }
-		h1                     { text-align: center; margin: 0; margin-bottom: 1em; }
-		h2                     { margin: 0 0 .5em .3em; font-size: 1.5em; }
-		table                  { border-collapse: collapse;  }
-		th, td                 { padding: .4em; border-bottom: 1px solid #d4d4d4; vertical-align: top; }
-		th                     { text-align: left; font-weight: normal; }
-		a, button              { background: transparent; border: none; color: #00f; cursor: pointer; text-decoration: none;
-		                         font-size: 1rem; transition: color .2s; padding: 0; }
-		button[disabled]       { color: #252525; }
-		a:hover, button:hover  { text-decoration: underline; color: #6491ff; }
-		button[disabled]:hover { color: #252525; text-decoration: none; cursor: default; }
-		.box                   { padding: 1em; margin-bottom: 2em; background-color: #fff; box-shadow: 0 0 6px rgba(0,0,0,.2); }
-		input                  { max-width: 5em; }
+		body                   { font:16px/1.5em sans-serif; color:#252525; padding:1em; background-color:#eee; }
+		h1                     { text-align:center; margin:0; margin-bottom:1em; }
+		h2                     { margin:0 0 .5em .3em; font-size:1.5em; }
+		table                  { border-collapse:collapse;  }
+		th, td                 { padding:.4em; border-bottom:1px solid #d4d4d4; vertical-align:top; }
+		th                     { text-align:left; font-weight:normal; }
+		a, button              { background:transparent; border:none; color:#00f; cursor:pointer; text-decoration:none;
+		                         font-size:1rem; transition:color .2s; padding:0; }
+		button[disabled]       { color:#252525; }
+		a:hover, button:hover  { text-decoration:underline; color:#6491ff; }
+		button[disabled]:hover { color:#252525; text-decoration:none; cursor:default; }
+		.box                   { padding:1em; margin-bottom:2em; background-color:#fff; box-shadow:0 0 6px rgba(0,0,0,.2); }
+		input                  { max-width:5em; }
 
-		#pprof-opt             { display: flex; flex-wrap: wrap; margin-left: .5em; }
-		#pprof-opt > div:not(:first-child) { margin-left: 2em; }
-		#pprof-tbl             { display: flex; flex-wrap: wrap; margin-top: .5em; }
-		#pprof-tbl div         { width: 16em; padding: 1em; margin: .25em; background-color: #fff; box-shadow: 0 0 6px rgba(0,0,0,.2); }
-		#pprof-btm             { margin: .5em 0 2em .5em; }
+		#pprof-opt             { display:flex; flex-wrap:wrap; margin-left:.5em; }
+		#pprof-opt > div:not(:first-child) { margin-left:2em; }
+		#pprof-tbl             { display:flex; flex-wrap:wrap; margin-top:.5em; }
+		#pprof-tbl div         { width:16em; padding:1em; margin:.25em; background-color:#fff; box-shadow:0 0 6px rgba(0,0,0,.2); }
+		#pprof-btm             { margin:.5em 0 2em .5em; }
 
-		#setrate               { display: flex; flex-wrap: wrap; align-items: start; }
-		#setrate div           { flex-basis: 100%; height: 1em; }
-		#setrate label         { width: 11em; }
-		#setrate span          { max-width: 40em; margin-left: 1em; }
+		#setrate               { display:flex; flex-wrap:wrap; align-items:start; }
+		#setrate div           { flex-basis:100%; height:1em; }
+		#setrate label         { width:11em; }
+		#setrate span          { max-width:40em; margin-left:1em; }
 
-		#metrics tr:hover      { background-color: #f7f7f7; }
-		.col-nw                { white-space: nowrap; }
-		.col-val               { padding: .4em 2em; }
+		#metrics tr:hover      { background-color:#f7f7f7; }
+		.col-nw                { white-space:nowrap; }
+		.col-val               { padding:.4em 2em; text-align:right; }
 	</style>
 </head>
 
@@ -71,7 +71,7 @@
 					<button name="page" value="{{$p.Name}}" {{if $p.Disabled}}disabled{{end}}>{{$p.Name}}</button>
 					{{if gt $p.Count -1}} ({{$p.Count}}){{end}}<br>
 					{{$p.Desc}}
-					{{if $p.Disabled}}<strong>Disabled</strong>: requires setting the profile rates.{{end}}
+					{{if $p.Disabled}}<strong>Disabled</strong>: requires setting profile rates.{{end}}
 				</div>
 			{{end}}
 			<div>
@@ -117,8 +117,8 @@
 	<table id="metrics"><tbody>
 	{{range $m := .metrics}}
 		<tr>
-			<td class="col-nw">{{$m.Name}}</td>
-			<td class="col-nw col-val">{{$m.Value}}</td>
+			<td class="col-nw"><code>{{$m.Name}}</code></td>
+			<td class="col-nw col-val"><code>{{$m.Value}}</code></td>
 			<td>{{$m.Desc}}</td>
 		</tr>
 	{{end}}
